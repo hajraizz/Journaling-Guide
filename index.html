@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Journaling</title>
+
+  <style>
+    :root{
+      --bg: #c37d5d;
+      --sidebar: rgb(244, 222, 203);
+      --accent: #a87e62;
+      --text: #562605;
+      --white: #ffffff;
+      --shadow: 0 10px 25px rgba(0,0,0,.12);
+      --radius: 16px;
+      --max: 1100px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: Georgia, "Times New Roman", Times, serif; color: var(--text); background: #997855; }
+
+    /* Header */
+    .header{
+      background-image: url("assets/brownie.jpeg");
+      background-repeat: repeat-x;
+      background-size: auto 220px;
+      min-height: 320px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.15), rgba(0,0,0,.15));
+      pointer-events:none;
+    }
+
+    .topbar{
+      position: relative;
+      z-index: 2;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-decoration: none;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    /* Nav buttons */
+    .nav1{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .nav1 a { text-decoration: none; }
+    .nav1 button{
+      padding: 10px 14px;
+      font-size: 16px;
+      color: #fff;
+      font-family: inherit;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform .15s ease,  .15s ease;
+    }
+    .nav1 button:hover{
+      background: rgba(0,0,0,.35);
+      transform: translateY(-1px);
+    }
+
+    /* Mobile menu button */
+    .menuBtn{
+      display: none;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* Hero title area */
+    .hero{
+      position: relative;
+      z-index: 2;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 26px 16px 24px;
+      text-align: center;
+    }
+    .title{
+      font-size: clamp(28px, 4vw, 44px);
+      color: #fff;
+      margin-top: 18px;
+    }
+    .qoute{
+      margin-top: 12px;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: clamp(14px, 2vw, 18px);
+      color: rgba(43, 26, 3, 0.98);
+    }
+
+    /* Layout */
+    .Page{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 16px;
+    }
+
+    /* Sidebar */
+    aside{
+      background: var(--sidebar);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 14px;
+      align-self: start;
+      height: fit-content;
+    }
+
+    .menuTitle{
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .menu .link{
+      display: block;
+      padding: 10px 12px;
+      color: var(--text);
+      margin: 8px 0;
+      background: rgba(255,255,255,.35);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background .15s ease, transform .15s ease;
+      font-family: "Trebuchet MS", system-ui, sans-serif;
+    }
+    .menu .link:hover{
+      background: #a87e62;
+      color: #fff;
+      transform: translateX(2px);
+    }
+    .menu .link.active{
+      background: #8b5c44;
+      color: #fff;
+    }
+
+    /* Content */
+    main.information{
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      color: #fff;
+      min-height: 520px;
+    }
+
+    .panel{
+      display: none;
+      background: rgba(255,255,255,.06);
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    .panel.active{ display: block; }
+
+    .panel h1{ margin-bottom: 10px; }
+    .panel h2{ margin-top: 14px; margin-bottom: 6px; }
+    .panel p, .panel li{ line-height: 1.55; margin: 8px 0; }
+    .panel ul, .panel ol{ padding-left: 18px; margin: 8px 0; }
+
+    /* Images */
+    img{
+      max-width: 100%;
+      height: auto;
+      border-radius: 14px;
+      display: block;
+      margin: 12px auto;
+    }
+    .intro, .written, .writing, .notion{
+      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+    }
+
+    /* Footer */
+    footer{
+      background: var(--accent);
+      color: #000;
+      padding: 18px 16px;
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .Page{ grid-template-columns: 1fr; }
+      aside{ position: static; }
+    }
+
+    @media (max-width: 700px){
+      .menuBtn{ display: inline-flex; }
+      .nav1{
+        display: none; /* hidden by default on mobile */
+        width: 100%;
+        justify-content: center;
+      }
+      .nav1.open{ display: flex; }
+
+      .topbar{
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="topbar">
+      <a class="brand" href="#introduction" data-section="introduction">Journaling Guide</a>
+
+      <button class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="topNav">
+        ☰ Menu
+      </button>
+
+      <nav class="nav1" id="topNav">
+        <button type="button" data-section="introduction">Home</button>
+
+        <a href="https://www.notion.com/templates/category/journaling?srsltid=AfmBOoqGwzEUwKJbpZgFeLIm7a_wpL1jFnZSzR_r0oQNXz_4wK5Sg3Fm" target="_blank" rel="noreferrer">
+          <button type="button">Templates</button>
+        </a>
+
+        <a href="https://www.youtube.com/channel/UCSc_BneU9wXWNIaEbiEJq_g/videos" target="_blank" rel="noreferrer">
+          <button type="button">Blogs</button>
+        </a>
+        <a href="https://www.reddit.com/r/Journaling/" target="_blank" rel="noreferrer">
+        <button type="button" >Community</button>
+        </a>
+      </nav>
+    </div>
+
+    <div class="hero">
+      <h1 class="title">Journaling Guide</h1>
+      <h5 class="qoute">“Journal writing is a voyage to the interior.” – Christina Baldwin</h5>
+    </div>
+  </header>
+
+  <div class="Page">
+    <aside>
+      <div class="menuTitle">Sections</div>
+      <nav class="menu" id="sideMenu">
+        <a href="#introduction" class="link" data-section="introduction">Introduction</a>
+        <a href="#types" class="link" data-section="types">Types</a>
+        <a href="#digital" class="link" data-section="digital">Digital Journaling</a>
+        <a href="#manual" class="link" data-section="manual">Manual Journaling</a>
+        <a href="#visual" class="link" data-section="visual">Visual Journaling</a>
+        <a href="#how" class="link" data-section="how">How to Start</a>
+        <a href="#what" class="link" data-section="what">What to Write</a>
+        <a href="#benefits" class="link" data-section="benefits">Benefits</a>
+      </nav>
+    </aside>
+
+    <main class="information" id="content">
+
+      <!-- INTRO -->
+      <section class="panel active" id="introduction" data-panel="introduction">
+        <img src="assets\pic1.jpeg" class="intro" alt="Journaling illustration">
+        <h1>Journaling: A Powerful Tool for Self-Discovery</h1>
+        <p>So, you've decided to embark on the thrilling adventure of journaling. Welcome to the club!</p>
+        <p>As a seasoned journaler, I can attest to the transformative power of putting pen to paper (or fingers to keyboard, if you're a digital native).</p>
+        <p>It's like having your own personal therapist, confidante, and time capsule all rolled into one.</p>
+        <p>But before you dive headfirst into the world of blank pages and endless possibilities, let's take a moment to appreciate the sheer awesomeness of journaling.</p>
+        <p>It's more than just scribbling down your thoughts and feelings; it's a form of self-expression, a way to connect with your inner self, and a chance to become the author of your own life story.</p>
+        <p>So, whether you're a seasoned wordsmith or just starting your journaling journey, get ready to unleash your inner writer and embark on a wild and wonderful adventure of self-discovery.</p>
+
+        <h2>A bookish definition of Journaling</h2>
+        <p>Journaling is the practice of regularly recording thoughts, feelings, experiences, and observations in a structured or unstructured format. It serves as a personal outlet for self-reflection, creativity, and emotional expression.</p>
+
+        <h2>Inspirational Quotes</h2>
+        <ul>
+          <li>"The only journal that matters is the one you write." - Joan Didion</li>
+          <li>"Journaling is a way of tapping into your subconscious and accessing your intuition." - Julia Cameron</li>
+          <li>"Writing is a way of talking to yourself without having to listen." - George Orwell</li>
+        </ul>
+
+        <p>Remember, journaling is a personal journey. There are no right or wrong ways to do it.</p>
+      </section>
+
+      <!-- TYPES -->
+      <section class="panel" id="types" data-panel="types">
+        <h1>Types of Journaling</h1>
+        <p>Journaling can take many forms, each serving different purposes and preferences.</p>
+        <ul>
+          <li><h2>1. Reflective Journaling</h2><p>Reflecting on daily experiences and emotions, including lessons learned and insights gained.</p></li>
+          <li><h2>2. Gratitude Journaling</h2><p>Writing down things you are grateful for to foster positivity.</p></li>
+          <li><h2>3. Bullet Journaling</h2><p>A customizable system that combines planner + diary + to-do lists.</p></li>
+          <li><h2>4. Creative Journaling</h2><p>Mix writing with artistic expression—drawings, doodles, collages.</p></li>
+          <li><h2>5. Dream Journaling</h2><p>Record dreams upon waking to explore themes and patterns.</p></li>
+          <li><h2>6. Travel Journaling</h2><p>Document travel experiences with reflections and mementos.</p></li>
+        </ul>
+      </section>
+
+      <!-- DIGITAL -->
+      <section class="panel" id="digital" data-panel="digital">
+        <h1>Digital Journaling</h1>
+        <p>Digital journaling is keeping a journal in a digital format using tools and apps.</p>
+
+        <h2>Advantages of Digital Journaling</h2>
+        <ul>
+          <li><strong>Accessibility:</strong> Write anywhere on multiple devices.</li>
+          <li><strong>Searchability:</strong> Quickly find past entries.</li>
+          <li><strong>Organization:</strong> Tags, categories, folders.</li>
+          <li><strong>Multimedia:</strong> Add images/audio/video.</li>
+          <li><strong>Backup:</strong> Cloud storage keeps entries safe.</li>
+        </ul>
+
+        <img src="assets\notion.png" class="notion" alt="Notion journaling example">
+
+        <h2>Popular Digital Journaling Tools</h2>
+        <ul>
+          <li><strong>Notepad:</strong> Simple and easy for beginners.</li>
+          <li><strong>Evernote:</strong> Notes + tags + attachments.</li>
+          <li><strong>Day One:</strong> Journal-focused app with prompts.</li>
+          <li><strong>Notion:</strong> Custom templates and organization.</li>
+          <li><strong>Google Docs:</strong> Easy, cloud-based journaling.</li>
+        </ul>
+      </section>
+
+      <!-- MANUAL -->
+      <section class="panel" id="manual" data-panel="manual">
+        <h1>Manual/Written Journaling</h1>
+        <p>Traditional journaling by hand using a notebook and pen/pencil.</p>
+
+        <h2>Advantages of Manual Journaling</h2>
+        <ul>
+          <li><strong>Personal Connection:</strong> More intimate reflection.</li>
+          <li><strong>Mindfulness:</strong> Slows you down.</li>
+          <li><strong>Memory Retention:</strong> Better comprehension/recall.</li>
+          <li><strong>Creative Freedom:</strong> Doodles, stickers, sketches.</li>
+          <li><strong>Distraction-Free:</strong> No notifications.</li>
+        </ul>
+
+        <h2>Popular Manual Journaling Tools</h2>
+        <img src="https://i0.wp.com/mindfulambition.net/wp-content/uploads/2016/11/gratitude-journal-e1480629840443.jpg?resize=800%2C450&ssl=1" class="written" alt="Gratitude journal">
+        <ul>
+          <li><strong>Bullet Journal</strong></li>
+          <li><strong>Gratitude Journal</strong></li>
+          <li><strong>Travel Journal</strong></li>
+          <li><strong>Sketchbook</strong></li>
+        </ul>
+      </section>
+
+      <!-- VISUAL -->
+      <section class="panel" id="visual" data-panel="visual">
+        <h1>Visual Journaling</h1>
+        <p>Visual journaling combines words with drawings, photos, collages, and imagery.</p>
+
+        <h2>Advantages of Visual Journaling</h2>
+        <ul>
+          <li><strong>Enhanced Self-Expression</strong></li>
+          <li><strong>Increased Creativity</strong></li>
+          <li><strong>Emotional Healing</strong></li>
+          <li><strong>Visual Reflection</strong></li>
+          <li><strong>Less Pressure</strong></li>
+        </ul>
+
+        <img src="assets/writing.png" class="writing" alt="Visual journaling example">
+
+        <h2>Popular Visual Journaling Tools</h2>
+        <ul>
+          <li><strong>Mixed Media Journals</strong></li>
+          <li><strong>Scrapbooking</strong></li>
+          <li><strong>Collage Journals</strong></li>
+          <li><strong>Art Journals</strong></li>
+        </ul>
+      </section>
+
+      <!-- HOW -->
+      <section class="panel" id="how" data-panel="how">
+  <h1>How On Earth <em>should</em> I start journaling?</h1>
+
+  <p>
+    Many people, from bloggers to wellness gurus, would say “just start”.
+    Wow. Such good advice. Thumbs up! 😭
+    For most of us, “just start” is too vague — we need a little structure so the habit actually sticks.
+    Here’s a simple, no-pressure way to begin.
+  </p>
+
+  <h2>Step 1: Pick your “minimum journal”</h2>
+  <p>
+    The fastest way to build a journaling habit is to make it ridiculously easy.
+    Choose a minimum that feels almost too small to fail:
+  </p>
+  <ul>
+    <li><strong>2 minutes</strong> OR <strong>5 lines</strong> OR <strong>one paragraph</strong></li>
+    <li><strong>One page</strong> if you’re writing by hand (only if that feels doable)</li>
+    <li><strong>One voice note</strong> if writing feels hard (yes, it still counts)</li>
+  </ul>
+  <p>
+    Your goal is consistency, not perfection. Fancy notebooks are cute, but a “boring” notebook works just as well.
+  </p>
+
+  <h2>Step 2: Choose a time + a trigger</h2>
+  <p>
+    Habits stick best when they’re attached to something you already do. Pick ONE trigger:
+  </p>
+  <ul>
+    <li><strong>After fajr / after breakfast</strong> (morning clarity)</li>
+    <li><strong>After dinner</strong> (daily reflection)</li>
+    <li><strong>Right before bed</strong> (brain dump + calmer sleep)</li>
+  </ul>
+  <p>
+    Example: “After I brush my teeth at night, I’ll journal for 2 minutes.”
+  </p>
+
+  <h2>Step 3: Use a simple template (so you never get stuck)</h2>
+  <p>On days you don’t know what to write, copy-paste this structure:</p>
+  <ol>
+    <li><strong>What happened today?</strong> (2–3 lines)</li>
+    <li><strong>How did I feel?</strong> (name the emotion)</li>
+    <li><strong>Why might I feel that way?</strong></li>
+    <li><strong>One small thing I’m grateful for</strong></li>
+    <li><strong>One thing I’ll do tomorrow</strong></li>
+  </ol>
+
+  <h2>Quick prompts (pick ONE)</h2>
+  <ul>
+    <li>Right now, my mind is full of…</li>
+    <li>The best part of today was…</li>
+    <li>The hardest part of today was…</li>
+    <li>I’m avoiding ___ because…</li>
+    <li>If I could redo one moment today, it would be…</li>
+    <li>Something I need to hear today is…</li>
+  </ul>
+
+  <h2>Try “Brain Dump” journaling (for anxious days)</h2>
+  <p>
+    Set a timer for 3–5 minutes and write anything that comes to mind.
+    No grammar. No structure. Just empty the tabs open in your brain.
+    When the timer ends, stop.
+  </p>
+
+  <h2>Artist’s Way: Morning Pages (classic, powerful)</h2>
+  <p>
+    To quote Julia Cameron (the big brains behind <em>The Artist’s Way</em>),
+    Morning Pages are three pages of longhand, stream-of-consciousness writing,
+    done first thing in the morning.
+  </p>
+  <p>
+    It can be nonsense. It can be “I’m sleepy, I want chai, I hate Mondays.”
+    The point is: you show up and you write. It clears mental clutter like nothing else.
+  </p>
+
+  <h2>What if I miss a day?</h2>
+  <p>
+    Missing a day isn’t failure — it’s normal. The rule is:
+    <strong>Never miss twice.</strong>
+    If you skip today, write one tiny entry tomorrow (even 2 lines).
+  </p>
+
+  <h2>Make it cozy (but not complicated)</h2>
+  <ul>
+    <li>Keep your journal + pen in the same visible spot.</li>
+    <li>Write messy. Write ugly. Write honest.</li>
+    <li>Don’t reread immediately if it makes you cringe — give it time.</li>
+  </ul>
+
+  <h2>Optional: A tiny 7-day starter plan</h2>
+  <ol>
+    <li><strong>Day 1:</strong> Why do I want to journal?</li>
+    <li><strong>Day 2:</strong> What’s stressing me lately?</li>
+    <li><strong>Day 3:</strong> 3 things I’m grateful for + why</li>
+    <li><strong>Day 4:</strong> What do I need more of in my life?</li>
+    <li><strong>Day 5:</strong> A moment I’m proud of</li>
+    <li><strong>Day 6:</strong> What I’m learning about myself</li>
+    <li><strong>Day 7:</strong> Letter to my future self</li>
+  </ol>
+
+  <p>
+    The secret is simple: keep it small, keep it regular, and let it evolve.
+    You don’t “become good” and then journal. YOU journal and then become good at it.
+  </p>
+</section>
+
+
+      <!-- WHAT -->
+      <section class="panel" id="what" data-panel="what">
+        <h1>What should I write?</h1>
+        <h3>There is no <em>should or must</em> when it comes to journaling!</h3>
+        <p>Write as disjointed or organized as your mind feels in the moment.</p>
+        <ol>
+          <li><strong>Review Your Progress</strong></li>
+          <li><strong>Plan out Projects</strong></li>
+          <li><strong>Gratitude Log</strong></li>
+          <li><strong>Thoughts and Feelings</strong></li>
+          <li><strong>Day-to-Day Happenings</strong></li>
+        </ol>
+        <p><em>"The more grateful I am, the more beauty I see." - Mary Davis</em></p>
+        <img src="assets\library.jpeg" class="writing" alt="how to">
+      </section>
+
+      <!-- BENEFITS -->
+      <section class="panel" id="benefits" data-panel="benefits">
+        <h1>Benefits of Journaling</h1>
+        <p>Engaging in journaling has psychological, emotional, and practical benefits.</p>
+
+        <h3>1. Self-Reflection</h3>
+        <p>Journaling increases emotional awareness and personal growth.</p>
+
+        <h3>2. Stress Relief</h3>
+        <p>Writing provides a healthy outlet, reducing anxiety and stress.</p>
+
+        <h3>3. Improved Mental Health</h3>
+        <p>Expressive writing may help reduce symptoms of depression/anxiety.</p>
+
+        <h3>4. Enhanced Creativity</h3>
+        <p>Great for brainstorming and problem-solving.</p>
+
+        <h3>5. Goal Setting and Tracking</h3>
+        <p>Helps clarify intentions and track progress.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <p class="Copyright">Copyright ©️ Journal by Hajira 2024</p>
+  </footer>
+
+  <script>
+    // --- Mobile top menu toggle ---
+    const menuBtn = document.getElementById("menuBtn");
+    const topNav = document.getElementById("topNav");
+
+    menuBtn.addEventListener("click", () => {
+      const isOpen = topNav.classList.toggle("open");
+      menuBtn.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    // --- Single-page section switching (no :target needed) ---
+    const links = document.querySelectorAll("[data-section]");
+    const panels = document.querySelectorAll("[data-panel]");
+    const sideLinks = document.querySelectorAll("#sideMenu .link");
+
+    function showSection(id, pushHash = true) {
+      // Panels
+      panels.forEach(p => p.classList.toggle("active", p.dataset.panel === id));
+
+      // Sidebar active state
+      sideLinks.forEach(a => a.classList.toggle("active", a.dataset.section === id));
+
+      // Update URL hash (optional)
+      if (pushHash) history.replaceState(null, "", "#" + id);
+
+      // On mobile, close top nav after selecting
+      if (topNav.classList.contains("open")) {
+        topNav.classList.remove("open");
+        menuBtn.setAttribute("aria-expanded", "false");
+      }
+
+      // Scroll to top of content area on small screens
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        document.getElementById("content").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    // Click handlers
+    links.forEach(el => {
+      el.addEventListener("click", (e) => {
+        const id = el.dataset.section;
+        if (!id) return;
+
+        // Prevent default only for internal navigation
+        // (so external links still open normally)
+        if (el.tagName.toLowerCase() === "a" && el.getAttribute("href")?.startsWith("http")) return;
+
+        e.preventDefault();
+        showSection(id);
+      });
+    });
+
+    const initial = (location.hash || "#introduction").replace("#", "");
+    showSection(initial, false);
+
+    window.addEventListener("hashchange", () => {
+      const id = (location.hash || "#introduction").replace("#", "");
+      showSection(id, false);
+    });
+  </script>
+</body>
+</html>
