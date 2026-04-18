@@ -3,606 +3,1870 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Journaling</title>
+  <title>The Journal — A Guide to Writing Your Inner World</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg: #c37d5d;
-      --sidebar: rgb(244, 222, 203);
-      --accent: #a87e62;
-      --text: #562605;
-      --white: #ffffff;
-      --shadow: 0 10px 25px rgba(0,0,0,.12);
-      --radius: 16px;
-      --max: 1100px;
+    :root {
+      --espresso:    #2b1a0e;
+      --dark-roast:  #3d2314;
+      --roast:       #5c3317;
+      --mahogany:    #7a4422;
+      --caramel:     #a0622a;
+      --latte:       #c49a6c;
+      --cream:       #e8d5b7;
+      --parchment:   #f5ead6;
+      --ivory:       #faf4e8;
+      --fog:         #f0e6d3;
+      --ink:         #1c1008;
+      --muted:       #7a6248;
+      --gold:        #c9913a;
+      --gold-light:  #e8b86d;
+      --warm-white:  #fdfaf4;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: Georgia, "Times New Roman", Times, serif; color: var(--text); background: #997855; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    /* Header */
-    .header{
-      background-image: url("assets/brownie.jpeg");
-      background-repeat: repeat-x;
-      background-size: auto 220px;
-      min-height: 320px;
-      position: relative;
-      overflow: hidden;
-    }
-    .header::after{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.15), rgba(0,0,0,.15));
-      pointer-events:none;
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      background: var(--espresso);
+      color: var(--cream);
+      overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    .topbar{
-      position: relative;
-      z-index: 2;
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    /* ── Grain texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     }
 
-    .brand{
-      color: #fff;
+    /* ─────────────── NAVIGATION ─────────────── */
+    nav.topnav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      height: 68px;
+      background: rgba(27, 14, 6, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201, 145, 58, 0.25);
+    }
+
+    .nav-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
       font-weight: 700;
-      letter-spacing: .5px;
-      text-decoration: none;
-      font-size: 18px;
-      white-space: nowrap;
+      color: var(--gold-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .nav-brand span { color: var(--latte); font-weight: 400; font-style: italic; }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 6px;
     }
 
-    /* Nav buttons */
-    .nav1{
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .nav1 a { text-decoration: none; }
-    .nav1 button{
-      padding: 10px 14px;
-      font-size: 16px;
-      color: #fff;
-      font-family: inherit;
-      background: rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.25);
-      border-radius: 999px;
+    .nav-links button {
+      background: none;
+      border: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--latte);
+      letter-spacing: 0.04em;
+      padding: 7px 16px;
+      border-radius: 40px;
       cursor: pointer;
-      transition: transform .15s ease,  .15s ease;
+      transition: all 0.25s;
     }
-    .nav1 button:hover{
-      background: rgba(0,0,0,.35);
+
+    .nav-links button:hover,
+    .nav-links button.active {
+      background: rgba(201, 145, 58, 0.15);
+      color: var(--gold-light);
+    }
+
+    .nav-links button.nav-cta {
+      background: var(--gold);
+      color: var(--espresso);
+      font-weight: 700;
+    }
+    .nav-links button.nav-cta:hover {
+      background: var(--gold-light);
       transform: translateY(-1px);
     }
 
-    /* Mobile menu button */
-    .menuBtn{
+    /* Hamburger */
+    .hamburger {
       display: none;
-      background: rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.25);
-      color: #fff;
-      border-radius: 10px;
-      padding: 10px 12px;
-      cursor: pointer;
-      font-size: 16px;
+      flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--latte);
+      border-radius: 2px;
+      transition: all 0.3s;
     }
 
-    /* Hero title area */
-    .hero{
-      position: relative;
-      z-index: 2;
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 26px 16px 24px;
+    /* Mobile overlay */
+    .mobile-nav {
+      display: none;
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(27, 14, 6, 0.97);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav button {
+      background: none; border: none;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; color: var(--cream);
+      cursor: pointer; padding: 10px 30px;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    .mobile-nav button:hover { color: var(--gold-light); }
+    .mobile-close {
+      position: absolute; top: 22px; right: 28px;
+      background: none; border: none; color: var(--latte);
+      font-size: 2rem; cursor: pointer; line-height: 1;
+    }
+
+    /* ─────────────── PAGES ─────────────── */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: block; }
+
+    /* ─────────────── HOME PAGE ─────────────── */
+    .hero {
+      padding-top: 68px;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       text-align: center;
-    }
-    .title{
-      font-size: clamp(28px, 4vw, 44px);
-      color: #fff;
-      margin-top: 18px;
-    }
-    .qoute{
-      margin-top: 12px;
-      font-family: 'Times New Roman', Times, serif;
-      font-size: clamp(14px, 2vw, 18px);
-      color: rgba(43, 26, 3, 0.98);
+      position: relative;
+      overflow: hidden;
     }
 
-    /* Layout */
-    .Page{
-      max-width: var(--max);
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(92,51,23,0.45) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 20% 80%, rgba(60,30,10,0.3) 0%, transparent 60%),
+        linear-gradient(160deg, var(--espresso) 0%, var(--dark-roast) 40%, #1a0d05 100%);
+    }
+
+    .hero-rings {
+      position: absolute; inset: 0; z-index: 0;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(201, 145, 58, 0.1);
+    }
+    .ring:nth-child(1) { width: 300px; height: 300px; }
+    .ring:nth-child(2) { width: 520px; height: 520px; border-color: rgba(201, 145, 58, 0.07); }
+    .ring:nth-child(3) { width: 750px; height: 750px; border-color: rgba(201, 145, 58, 0.04); }
+    .ring:nth-child(4) { width: 1000px; height: 1000px; border-color: rgba(201, 145, 58, 0.02); }
+
+    .hero-content { position: relative; z-index: 2; padding: 0 20px; max-width: 840px; }
+
+    .hero-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      font-weight: 300;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--ivory);
+      margin-bottom: 10px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.4s forwards;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-subtitle {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: var(--latte);
+      margin-bottom: 48px;
+      line-height: 1.6;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.6s forwards;
+    }
+
+    .hero-actions {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.8s forwards;
+    }
+
+    .btn {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 14px 34px;
+      border-radius: 50px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--espresso);
+      font-weight: 700;
+      box-shadow: 0 4px 20px rgba(201, 145, 58, 0.35);
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(201, 145, 58, 0.45);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--cream);
+      border: 1px solid rgba(228, 205, 175, 0.35);
+    }
+    .btn-outline:hover {
+      background: rgba(228, 205, 175, 0.08);
+      border-color: var(--gold);
+      color: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    /* Divider ornament */
+    .ornament {
+      display: flex; align-items: center; gap: 16px;
+      color: var(--gold);
       margin: 0 auto;
-      padding: 18px 16px 28px;
+      max-width: 240px;
+    }
+    .ornament::before, .ornament::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .ornament::after {
+      background: linear-gradient(to left, transparent, var(--gold));
+    }
+    .ornament span { font-size: 1.1rem; letter-spacing: 0.15em; }
+
+    /* Features strip */
+    .features-strip {
+      background: var(--dark-roast);
+      border-top: 1px solid rgba(201, 145, 58, 0.15);
+      border-bottom: 1px solid rgba(201, 145, 58, 0.15);
+      padding: 70px 40px;
+    }
+
+    .section-label {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 600;
+      color: var(--ivory);
+      margin-bottom: 56px;
+    }
+
+    .features-grid {
+      max-width: 1100px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 28px;
+    }
+
+    .feature-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201, 145, 58, 0.12);
+      border-radius: 16px;
+      padding: 32px 26px;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+    .feature-card:hover { transform: translateY(-4px); border-color: rgba(201, 145, 58, 0.3); }
+    .feature-card:hover::before { transform: scaleX(1); }
+
+    .feature-icon { font-size: 2rem; margin-bottom: 18px; display: block; }
+
+    .feature-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--gold-light);
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      font-size: 0.97rem;
+      line-height: 1.65;
+      color: var(--latte);
+      font-weight: 300;
+    }
+
+    /* Quote block */
+    .quote-block {
+      background: linear-gradient(135deg, var(--roast) 0%, var(--dark-roast) 100%);
+      padding: 90px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .quote-block::before {
+      content: '"';
+      position: absolute;
+      top: -20px; left: 50%; transform: translateX(-50%);
+      font-family: 'Playfair Display', serif;
+      font-size: 22rem;
+      color: rgba(201, 145, 58, 0.04);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .quote-block blockquote {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      line-height: 1.55;
+      color: var(--cream);
+      max-width: 780px;
+      margin: 0 auto 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quote-attr {
+      color: var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* Quick-nav tiles */
+    .explore-section {
+      background: var(--espresso);
+      padding: 80px 40px;
+    }
+    .explore-grid {
+      max-width: 1100px;
+      margin: 40px auto 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .explore-tile {
+      background: var(--dark-roast);
+      border: 1px solid rgba(201, 145, 58, 0.12);
+      border-radius: 14px;
+      padding: 30px 22px;
+      cursor: pointer;
+      transition: all 0.28s;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+    }
+    .explore-tile:hover {
+      background: var(--roast);
+      border-color: var(--gold);
+      transform: translateY(-3px);
+    }
+    .tile-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: rgba(201, 145, 58, 0.3);
+      line-height: 1;
+    }
+    .tile-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--cream);
+    }
+    .tile-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ─────────────── GUIDE PAGE ─────────────── */
+    .guide-page {
+      padding-top: 68px;
+      background: var(--espresso);
+    }
+
+    .guide-header {
+      background: linear-gradient(160deg, var(--dark-roast) 0%, var(--espresso) 100%);
+      padding: 72px 40px 56px;
+      text-align: center;
+      border-bottom: 1px solid rgba(201, 145, 58, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .guide-header::after {
+      content: '✦ ✦ ✦';
+      position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+      color: rgba(201, 145, 58, 0.3);
+      font-size: 0.75rem;
+      letter-spacing: 0.5em;
+    }
+    .guide-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 12px;
+    }
+    .guide-header p {
+      font-size: 1.15rem;
+      color: var(--latte);
+      font-style: italic;
+      font-family: 'IM Fell English', serif;
+    }
+
+    .guide-layout {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 36px 24px 60px;
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 28px;
     }
 
     /* Sidebar */
-    aside{
-      background: var(--sidebar);
-      border-radius: var(--radius);
-      padding: 14px;
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 14px;
+    .guide-sidebar {
+      position: sticky; top: 88px;
       align-self: start;
       height: fit-content;
     }
 
-    .menuTitle{
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--text);
+    .sidebar-inner {
+      background: var(--dark-roast);
+      border: 1px solid rgba(201, 145, 58, 0.15);
+      border-radius: 16px;
+      padding: 22px 16px;
     }
 
-    .menu .link{
+    .sidebar-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      padding: 0 6px;
+    }
+
+    .sidebar-link {
       display: block;
-      padding: 10px 12px;
-      color: var(--text);
-      margin: 8px 0;
-      background: rgba(255,255,255,.35);
+      padding: 10px 14px;
       border-radius: 10px;
-      text-decoration: none;
-      transition: background .15s ease, transform .15s ease;
-      font-family: "Trebuchet MS", system-ui, sans-serif;
+      color: var(--latte);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.97rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 3px 0;
+      border: 1px solid transparent;
     }
-    .menu .link:hover{
-      background: #a87e62;
-      color: #fff;
-      transform: translateX(2px);
+    .sidebar-link:hover {
+      background: rgba(201, 145, 58, 0.08);
+      color: var(--cream);
+      border-color: rgba(201, 145, 58, 0.12);
     }
-    .menu .link.active{
-      background: #8b5c44;
-      color: #fff;
-    }
-
-    /* Content */
-    main.information{
-      background: var(--bg);
-      border-radius: var(--radius);
-      padding: 14px;
-      box-shadow: var(--shadow);
-      color: #fff;
-      min-height: 520px;
+    .sidebar-link.active {
+      background: rgba(201, 145, 58, 0.15);
+      color: var(--gold-light);
+      border-color: rgba(201, 145, 58, 0.25);
+      font-weight: 500;
     }
 
-    .panel{
-      display: none;
-      background: rgba(255,255,255,.06);
+    /* Panels */
+    .panel-wrap {
+      background: var(--dark-roast);
+      border: 1px solid rgba(201, 145, 58, 0.12);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .guide-panel { display: none; padding: 38px 42px; }
+    .guide-panel.active { display: block; }
+
+    .guide-panel h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 22px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(201, 145, 58, 0.18);
+    }
+
+    .guide-panel h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--gold-light);
+      margin: 28px 0 10px;
+    }
+
+    .guide-panel h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--latte);
+      margin: 22px 0 8px;
+    }
+
+    .guide-panel p {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--cream);
+      margin: 10px 0;
+      font-weight: 300;
+    }
+
+    .guide-panel ul, .guide-panel ol {
+      padding-left: 22px;
+      margin: 12px 0 16px;
+    }
+    .guide-panel li {
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: var(--cream);
+      margin: 6px 0;
+      font-weight: 300;
+    }
+    .guide-panel li strong {
+      color: var(--gold-light);
+      font-weight: 500;
+    }
+
+    .panel-quote {
+      margin: 24px 0;
+      padding: 20px 26px;
+      border-left: 3px solid var(--gold);
+      background: rgba(201, 145, 58, 0.06);
+      border-radius: 0 12px 12px 0;
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--cream);
+      line-height: 1.6;
+    }
+
+    .guide-tag {
+      display: inline-block;
+      background: rgba(201, 145, 58, 0.12);
+      color: var(--gold);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 30px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(201, 145, 58, 0.2);
+    }
+
+    /* Type cards */
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 22px 0;
+    }
+    .type-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201, 145, 58, 0.12);
       border-radius: 14px;
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,.15);
+      padding: 22px 18px;
+      transition: all 0.25s;
     }
-    .panel.active{ display: block; }
+    .type-card:hover {
+      border-color: rgba(201, 145, 58, 0.3);
+      transform: translateY(-3px);
+    }
+    .type-card .tc-icon { font-size: 1.6rem; margin-bottom: 10px; display: block; }
+    .type-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--gold-light);
+      margin-bottom: 7px;
+    }
+    .type-card p {
+      font-size: 0.93rem;
+      color: var(--latte);
+      line-height: 1.6;
+      margin: 0;
+    }
 
-    .panel h1{ margin-bottom: 10px; }
-    .panel h2{ margin-top: 14px; margin-bottom: 6px; }
-    .panel p, .panel li{ line-height: 1.55; margin: 8px 0; }
-    .panel ul, .panel ol{ padding-left: 18px; margin: 8px 0; }
-
-    /* Images */
-    img{
-      max-width: 100%;
-      height: auto;
+    /* Steps */
+    .step-item {
+      display: flex; gap: 20px;
+      margin: 20px 0;
+      padding: 22px 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201, 145, 58, 0.1);
       border-radius: 14px;
-      display: block;
-      margin: 12px auto;
+      align-items: flex-start;
     }
-    .intro, .written, .writing, .notion{
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: rgba(201, 145, 58, 0.35);
+      line-height: 1;
+      min-width: 40px;
+    }
+    .step-content h3 {
+      margin: 0 0 6px;
+      color: var(--cream);
+    }
+    .step-content p { margin: 0; font-size: 0.97rem; }
+
+    /* Benefits */
+    .benefit-list { list-style: none; padding: 0; margin: 18px 0; }
+    .benefit-list li {
+      padding: 16px 20px;
+      margin: 10px 0;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      border-left: 3px solid var(--gold);
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .benefit-list li .b-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .benefit-list li strong { color: var(--gold-light); display: block; margin-bottom: 4px; }
+
+    /* ─────────────── TEMPLATES PAGE ─────────────── */
+    .templates-page {
+      padding-top: 68px;
+      background: var(--espresso);
     }
 
-    /* Footer */
-    footer{
-      background: var(--accent);
-      color: #000;
-      padding: 18px 16px;
+    .templates-header {
+      background: linear-gradient(160deg, var(--roast) 0%, var(--dark-roast) 100%);
+      padding: 72px 40px 60px;
       text-align: center;
+      border-bottom: 1px solid rgba(201, 145, 58, 0.15);
+    }
+    .templates-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.3rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 12px;
+    }
+    .templates-header p {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--latte);
     }
 
-    /* Responsive */
-    @media (max-width: 900px){
-      .Page{ grid-template-columns: 1fr; }
-      aside{ position: static; }
+    .templates-body {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 50px 28px 80px;
     }
 
-    @media (max-width: 700px){
-      .menuBtn{ display: inline-flex; }
-      .nav1{
-        display: none; /* hidden by default on mobile */
-        width: 100%;
-        justify-content: center;
-      }
-      .nav1.open{ display: flex; }
+    .template-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--gold-light);
+      margin: 50px 0 22px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(201, 145, 58, 0.18);
+    }
 
-      .topbar{
-        flex-wrap: wrap;
-      }
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 22px;
+      margin-bottom: 20px;
+    }
+
+    .template-card {
+      background: var(--dark-roast);
+      border: 1px solid rgba(201, 145, 58, 0.14);
+      border-radius: 18px;
+      padding: 0;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .template-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(201, 145, 58, 0.35);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    }
+
+    .template-header-bar {
+      height: 6px;
+    }
+    .tc-amber { background: linear-gradient(90deg, var(--caramel), var(--gold-light)); }
+    .tc-roast { background: linear-gradient(90deg, var(--roast), var(--caramel)); }
+    .tc-muted  { background: linear-gradient(90deg, var(--muted), var(--latte)); }
+
+    .template-card-body { padding: 28px 26px; }
+    .template-card-body h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.18rem;
+      color: var(--ivory);
+      margin-bottom: 8px;
+    }
+    .template-card-body p {
+      font-size: 0.95rem;
+      color: var(--latte);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .template-preview {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(201, 145, 58, 0.1);
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 18px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+    }
+    .template-preview strong { color: var(--latte); font-style: normal; display: block; margin-bottom: 4px; }
+
+    .tag-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .tag {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 30px;
+      background: rgba(201, 145, 58, 0.1);
+      color: var(--gold);
+      border: 1px solid rgba(201, 145, 58, 0.18);
+    }
+
+    /* ─────────────── BLOG PAGE ─────────────── */
+    .blog-page {
+      padding-top: 68px;
+      background: var(--espresso);
+    }
+
+    .blog-header {
+      background: linear-gradient(160deg, var(--mahogany) 0%, var(--dark-roast) 100%);
+      padding: 72px 40px 60px;
+      text-align: center;
+      border-bottom: 1px solid rgba(201, 145, 58, 0.15);
+    }
+    .blog-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.3rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 12px;
+    }
+    .blog-header p {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--latte);
+    }
+
+    .blog-body {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 50px 28px 80px;
+    }
+
+    .featured-post {
+      background: var(--dark-roast);
+      border: 1px solid rgba(201, 145, 58, 0.18);
+      border-radius: 22px;
+      padding: 44px 46px;
+      margin-bottom: 50px;
+      position: relative;
+      overflow: hidden;
+    }
+    .featured-post::before {
+      content: 'Featured';
+      position: absolute; top: 20px; right: 20px;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--espresso);
+      background: var(--gold);
+      padding: 4px 12px;
+      border-radius: 30px;
+    }
+    .featured-post .fp-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .featured-post h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2.3rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 16px;
+      line-height: 1.25;
+    }
+    .featured-post p {
+      font-size: 1.08rem;
+      line-height: 1.75;
+      color: var(--latte);
+      max-width: 680px;
+      font-weight: 300;
+      margin-bottom: 24px;
+    }
+    .post-meta {
+      font-size: 0.83rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .post-meta span { color: var(--gold); }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .blog-card {
+      background: var(--dark-roast);
+      border: 1px solid rgba(201, 145, 58, 0.12);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .blog-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(201, 145, 58, 0.32);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.3);
+    }
+
+    .blog-card-band {
+      height: 5px;
+      background: linear-gradient(90deg, var(--roast), var(--gold));
+    }
+    .blog-card-body { padding: 26px 24px; }
+    .blog-cat {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .blog-card-body h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.18rem;
+      color: var(--ivory);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .blog-card-body p {
+      font-size: 0.93rem;
+      color: var(--latte);
+      line-height: 1.65;
+      margin-bottom: 18px;
+      font-weight: 300;
+    }
+    .blog-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding-top: 14px;
+      border-top: 1px solid rgba(201, 145, 58, 0.1);
+    }
+    .read-more {
+      color: var(--gold);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Newsletter strip */
+    .newsletter-strip {
+      background: linear-gradient(135deg, var(--roast) 0%, var(--mahogany) 100%);
+      padding: 70px 40px;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .newsletter-strip h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 10px;
+    }
+    .newsletter-strip p {
+      color: var(--latte);
+      font-style: italic;
+      font-family: 'IM Fell English', serif;
+      font-size: 1.05rem;
+      margin-bottom: 30px;
+    }
+    .nl-form { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .nl-input {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(201, 145, 58, 0.25);
+      border-radius: 40px;
+      padding: 13px 22px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      color: var(--cream);
+      width: 280px;
+      outline: none;
+      transition: border-color 0.25s;
+    }
+    .nl-input:focus { border-color: var(--gold); }
+    .nl-input::placeholder { color: var(--muted); }
+
+    /* ─────────────── FOOTER ─────────────── */
+    footer {
+      background: #110906;
+      border-top: 1px solid rgba(201, 145, 58, 0.12);
+      padding: 48px 40px 30px;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: 30px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid rgba(201, 145, 58, 0.1);
+      margin-bottom: 24px;
+    }
+    .footer-brand h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+    }
+    .footer-brand p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+      font-family: 'IM Fell English', serif;
+    }
+    .footer-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .footer-links button {
+      background: none; border: none;
+      color: var(--muted); font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem; cursor: pointer; padding: 4px 8px;
+      transition: color 0.2s;
+    }
+    .footer-links button:hover { color: var(--gold); }
+    .footer-bottom {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─────────────── ANIMATIONS ─────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─────────────── RESPONSIVE ─────────────── */
+    @media (max-width: 900px) {
+      .guide-layout { grid-template-columns: 1fr; }
+      .guide-sidebar { position: static; }
+      .sidebar-inner { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      .sidebar-label { width: 100%; }
+      .sidebar-link { padding: 7px 12px; font-size: 0.88rem; }
+      nav.topnav { padding: 0 20px; }
+      .features-strip, .quote-block, .explore-section, .blog-body, .templates-body { padding-left: 20px; padding-right: 20px; }
+      .guide-panel { padding: 24px 22px; }
+    }
+
+    @media (max-width: 700px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .featured-post { padding: 28px 22px; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      nav.topnav { padding: 0 18px; }
     }
   </style>
 </head>
-
 <body>
-  <header class="header">
-    <div class="topbar">
-      <a class="brand" href="#introduction" data-section="introduction">Journaling Guide</a>
 
-      <button class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="topNav">
-        ☰ Menu
-      </button>
+  <!-- ══════════════ NAV ══════════════ -->
+  <nav class="topnav">
+    <div class="nav-brand" onclick="showPage('home')">The <span>Journal</span></div>
 
-      <nav class="nav1" id="topNav">
-        <button type="button" data-section="introduction">Home</button>
-
-        <a href="https://www.notion.com/templates/category/journaling?srsltid=AfmBOoqGwzEUwKJbpZgFeLIm7a_wpL1jFnZSzR_r0oQNXz_4wK5Sg3Fm" target="_blank" rel="noreferrer">
-          <button type="button">Templates</button>
-        </a>
-
-        <a href="https://www.youtube.com/channel/UCSc_BneU9wXWNIaEbiEJq_g/videos" target="_blank" rel="noreferrer">
-          <button type="button">Blogs</button>
-        </a>
-        <a href="https://www.reddit.com/r/Journaling/" target="_blank" rel="noreferrer">
-        <button type="button" >Community</button>
-        </a>
-      </nav>
+    <div class="nav-links">
+      <button onclick="showPage('home')" data-page="home">Home</button>
+      <button onclick="showPage('guide')" data-page="guide">Guide</button>
+      <button onclick="showPage('templates')" data-page="templates">Templates</button>
+      <button onclick="showPage('blog')" data-page="blog">Blog</button>
+      <button class="nav-cta" onclick="showPage('guide'); showPanel('how')">Start Writing</button>
     </div>
 
-    <div class="hero">
-      <h1 class="title">Journaling Guide</h1>
-      <h5 class="qoute">“Journal writing is a voyage to the interior.” – Christina Baldwin</h5>
-    </div>
-  </header>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
 
-  <div class="Page">
-    <aside>
-      <div class="menuTitle">Sections</div>
-      <nav class="menu" id="sideMenu">
-        <a href="#introduction" class="link" data-section="introduction">Introduction</a>
-        <a href="#types" class="link" data-section="types">Types</a>
-        <a href="#digital" class="link" data-section="digital">Digital Journaling</a>
-        <a href="#manual" class="link" data-section="manual">Manual Journaling</a>
-        <a href="#visual" class="link" data-section="visual">Visual Journaling</a>
-        <a href="#how" class="link" data-section="how">How to Start</a>
-        <a href="#what" class="link" data-section="what">What to Write</a>
-        <a href="#benefits" class="link" data-section="benefits">Benefits</a>
-      </nav>
-    </aside>
-
-    <main class="information" id="content">
-
-      <!-- INTRO -->
-      <section class="panel active" id="introduction" data-panel="introduction">
-        <img src="assets\pic1.jpeg" class="intro" alt="Journaling illustration">
-        <h1>Journaling: A Powerful Tool for Self-Discovery</h1>
-        <p>So, you've decided to embark on the thrilling adventure of journaling. Welcome to the club!</p>
-        <p>As a seasoned journaler, I can attest to the transformative power of putting pen to paper (or fingers to keyboard, if you're a digital native).</p>
-        <p>It's like having your own personal therapist, confidante, and time capsule all rolled into one.</p>
-        <p>But before you dive headfirst into the world of blank pages and endless possibilities, let's take a moment to appreciate the sheer awesomeness of journaling.</p>
-        <p>It's more than just scribbling down your thoughts and feelings; it's a form of self-expression, a way to connect with your inner self, and a chance to become the author of your own life story.</p>
-        <p>So, whether you're a seasoned wordsmith or just starting your journaling journey, get ready to unleash your inner writer and embark on a wild and wonderful adventure of self-discovery.</p>
-
-        <h2>A bookish definition of Journaling</h2>
-        <p>Journaling is the practice of regularly recording thoughts, feelings, experiences, and observations in a structured or unstructured format. It serves as a personal outlet for self-reflection, creativity, and emotional expression.</p>
-
-        <h2>Inspirational Quotes</h2>
-        <ul>
-          <li>"The only journal that matters is the one you write." - Joan Didion</li>
-          <li>"Journaling is a way of tapping into your subconscious and accessing your intuition." - Julia Cameron</li>
-          <li>"Writing is a way of talking to yourself without having to listen." - George Orwell</li>
-        </ul>
-
-        <p>Remember, journaling is a personal journey. There are no right or wrong ways to do it.</p>
-      </section>
-
-      <!-- TYPES -->
-      <section class="panel" id="types" data-panel="types">
-        <h1>Types of Journaling</h1>
-        <p>Journaling can take many forms, each serving different purposes and preferences.</p>
-        <ul>
-          <li><h2>1. Reflective Journaling</h2><p>Reflecting on daily experiences and emotions, including lessons learned and insights gained.</p></li>
-          <li><h2>2. Gratitude Journaling</h2><p>Writing down things you are grateful for to foster positivity.</p></li>
-          <li><h2>3. Bullet Journaling</h2><p>A customizable system that combines planner + diary + to-do lists.</p></li>
-          <li><h2>4. Creative Journaling</h2><p>Mix writing with artistic expression—drawings, doodles, collages.</p></li>
-          <li><h2>5. Dream Journaling</h2><p>Record dreams upon waking to explore themes and patterns.</p></li>
-          <li><h2>6. Travel Journaling</h2><p>Document travel experiences with reflections and mementos.</p></li>
-        </ul>
-      </section>
-
-      <!-- DIGITAL -->
-      <section class="panel" id="digital" data-panel="digital">
-        <h1>Digital Journaling</h1>
-        <p>Digital journaling is keeping a journal in a digital format using tools and apps.</p>
-
-        <h2>Advantages of Digital Journaling</h2>
-        <ul>
-          <li><strong>Accessibility:</strong> Write anywhere on multiple devices.</li>
-          <li><strong>Searchability:</strong> Quickly find past entries.</li>
-          <li><strong>Organization:</strong> Tags, categories, folders.</li>
-          <li><strong>Multimedia:</strong> Add images/audio/video.</li>
-          <li><strong>Backup:</strong> Cloud storage keeps entries safe.</li>
-        </ul>
-
-        <img src="assets\notion.png" class="notion" alt="Notion journaling example">
-
-        <h2>Popular Digital Journaling Tools</h2>
-        <ul>
-          <li><strong>Notepad:</strong> Simple and easy for beginners.</li>
-          <li><strong>Evernote:</strong> Notes + tags + attachments.</li>
-          <li><strong>Day One:</strong> Journal-focused app with prompts.</li>
-          <li><strong>Notion:</strong> Custom templates and organization.</li>
-          <li><strong>Google Docs:</strong> Easy, cloud-based journaling.</li>
-        </ul>
-      </section>
-
-      <!-- MANUAL -->
-      <section class="panel" id="manual" data-panel="manual">
-        <h1>Manual/Written Journaling</h1>
-        <p>Traditional journaling by hand using a notebook and pen/pencil.</p>
-
-        <h2>Advantages of Manual Journaling</h2>
-        <ul>
-          <li><strong>Personal Connection:</strong> More intimate reflection.</li>
-          <li><strong>Mindfulness:</strong> Slows you down.</li>
-          <li><strong>Memory Retention:</strong> Better comprehension/recall.</li>
-          <li><strong>Creative Freedom:</strong> Doodles, stickers, sketches.</li>
-          <li><strong>Distraction-Free:</strong> No notifications.</li>
-        </ul>
-
-        <h2>Popular Manual Journaling Tools</h2>
-        <img src="https://i0.wp.com/mindfulambition.net/wp-content/uploads/2016/11/gratitude-journal-e1480629840443.jpg?resize=800%2C450&ssl=1" class="written" alt="Gratitude journal">
-        <ul>
-          <li><strong>Bullet Journal</strong></li>
-          <li><strong>Gratitude Journal</strong></li>
-          <li><strong>Travel Journal</strong></li>
-          <li><strong>Sketchbook</strong></li>
-        </ul>
-      </section>
-
-      <!-- VISUAL -->
-      <section class="panel" id="visual" data-panel="visual">
-        <h1>Visual Journaling</h1>
-        <p>Visual journaling combines words with drawings, photos, collages, and imagery.</p>
-
-        <h2>Advantages of Visual Journaling</h2>
-        <ul>
-          <li><strong>Enhanced Self-Expression</strong></li>
-          <li><strong>Increased Creativity</strong></li>
-          <li><strong>Emotional Healing</strong></li>
-          <li><strong>Visual Reflection</strong></li>
-          <li><strong>Less Pressure</strong></li>
-        </ul>
-
-        <img src="assets/writing.png" class="writing" alt="Visual journaling example">
-
-        <h2>Popular Visual Journaling Tools</h2>
-        <ul>
-          <li><strong>Mixed Media Journals</strong></li>
-          <li><strong>Scrapbooking</strong></li>
-          <li><strong>Collage Journals</strong></li>
-          <li><strong>Art Journals</strong></li>
-        </ul>
-      </section>
-
-      <!-- HOW -->
-      <section class="panel" id="how" data-panel="how">
-  <h1>How On Earth <em>should</em> I start journaling?</h1>
-
-  <p>
-    Many people, from bloggers to wellness gurus, would say “just start”.
-    Wow. Such good advice. Thumbs up! 😭
-    For most of us, “just start” is too vague — we need a little structure so the habit actually sticks.
-    Here’s a simple, no-pressure way to begin.
-  </p>
-
-  <h2>Step 1: Pick your “minimum journal”</h2>
-  <p>
-    The fastest way to build a journaling habit is to make it ridiculously easy.
-    Choose a minimum that feels almost too small to fail:
-  </p>
-  <ul>
-    <li><strong>2 minutes</strong> OR <strong>5 lines</strong> OR <strong>one paragraph</strong></li>
-    <li><strong>One page</strong> if you’re writing by hand (only if that feels doable)</li>
-    <li><strong>One voice note</strong> if writing feels hard (yes, it still counts)</li>
-  </ul>
-  <p>
-    Your goal is consistency, not perfection. Fancy notebooks are cute, but a “boring” notebook works just as well.
-  </p>
-
-  <h2>Step 2: Choose a time + a trigger</h2>
-  <p>
-    Habits stick best when they’re attached to something you already do. Pick ONE trigger:
-  </p>
-  <ul>
-    <li><strong>After fajr / after breakfast</strong> (morning clarity)</li>
-    <li><strong>After dinner</strong> (daily reflection)</li>
-    <li><strong>Right before bed</strong> (brain dump + calmer sleep)</li>
-  </ul>
-  <p>
-    Example: “After I brush my teeth at night, I’ll journal for 2 minutes.”
-  </p>
-
-  <h2>Step 3: Use a simple template (so you never get stuck)</h2>
-  <p>On days you don’t know what to write, copy-paste this structure:</p>
-  <ol>
-    <li><strong>What happened today?</strong> (2–3 lines)</li>
-    <li><strong>How did I feel?</strong> (name the emotion)</li>
-    <li><strong>Why might I feel that way?</strong></li>
-    <li><strong>One small thing I’m grateful for</strong></li>
-    <li><strong>One thing I’ll do tomorrow</strong></li>
-  </ol>
-
-  <h2>Quick prompts (pick ONE)</h2>
-  <ul>
-    <li>Right now, my mind is full of…</li>
-    <li>The best part of today was…</li>
-    <li>The hardest part of today was…</li>
-    <li>I’m avoiding ___ because…</li>
-    <li>If I could redo one moment today, it would be…</li>
-    <li>Something I need to hear today is…</li>
-  </ul>
-
-  <h2>Try “Brain Dump” journaling (for anxious days)</h2>
-  <p>
-    Set a timer for 3–5 minutes and write anything that comes to mind.
-    No grammar. No structure. Just empty the tabs open in your brain.
-    When the timer ends, stop.
-  </p>
-
-  <h2>Artist’s Way: Morning Pages (classic, powerful)</h2>
-  <p>
-    To quote Julia Cameron (the big brains behind <em>The Artist’s Way</em>),
-    Morning Pages are three pages of longhand, stream-of-consciousness writing,
-    done first thing in the morning.
-  </p>
-  <p>
-    It can be nonsense. It can be “I’m sleepy, I want chai, I hate Mondays.”
-    The point is: you show up and you write. It clears mental clutter like nothing else.
-  </p>
-
-  <h2>What if I miss a day?</h2>
-  <p>
-    Missing a day isn’t failure — it’s normal. The rule is:
-    <strong>Never miss twice.</strong>
-    If you skip today, write one tiny entry tomorrow (even 2 lines).
-  </p>
-
-  <h2>Make it cozy (but not complicated)</h2>
-  <ul>
-    <li>Keep your journal + pen in the same visible spot.</li>
-    <li>Write messy. Write ugly. Write honest.</li>
-    <li>Don’t reread immediately if it makes you cringe — give it time.</li>
-  </ul>
-
-  <h2>Optional: A tiny 7-day starter plan</h2>
-  <ol>
-    <li><strong>Day 1:</strong> Why do I want to journal?</li>
-    <li><strong>Day 2:</strong> What’s stressing me lately?</li>
-    <li><strong>Day 3:</strong> 3 things I’m grateful for + why</li>
-    <li><strong>Day 4:</strong> What do I need more of in my life?</li>
-    <li><strong>Day 5:</strong> A moment I’m proud of</li>
-    <li><strong>Day 6:</strong> What I’m learning about myself</li>
-    <li><strong>Day 7:</strong> Letter to my future self</li>
-  </ol>
-
-  <p>
-    The secret is simple: keep it small, keep it regular, and let it evolve.
-    You don’t “become good” and then journal. YOU journal and then become good at it.
-  </p>
-</section>
-
-
-      <!-- WHAT -->
-      <section class="panel" id="what" data-panel="what">
-        <h1>What should I write?</h1>
-        <h3>There is no <em>should or must</em> when it comes to journaling!</h3>
-        <p>Write as disjointed or organized as your mind feels in the moment.</p>
-        <ol>
-          <li><strong>Review Your Progress</strong></li>
-          <li><strong>Plan out Projects</strong></li>
-          <li><strong>Gratitude Log</strong></li>
-          <li><strong>Thoughts and Feelings</strong></li>
-          <li><strong>Day-to-Day Happenings</strong></li>
-        </ol>
-        <p><em>"The more grateful I am, the more beauty I see." - Mary Davis</em></p>
-        <img src="assets\library.jpeg" class="writing" alt="how to">
-      </section>
-
-      <!-- BENEFITS -->
-      <section class="panel" id="benefits" data-panel="benefits">
-        <h1>Benefits of Journaling</h1>
-        <p>Engaging in journaling has psychological, emotional, and practical benefits.</p>
-
-        <h3>1. Self-Reflection</h3>
-        <p>Journaling increases emotional awareness and personal growth.</p>
-
-        <h3>2. Stress Relief</h3>
-        <p>Writing provides a healthy outlet, reducing anxiety and stress.</p>
-
-        <h3>3. Improved Mental Health</h3>
-        <p>Expressive writing may help reduce symptoms of depression/anxiety.</p>
-
-        <h3>4. Enhanced Creativity</h3>
-        <p>Great for brainstorming and problem-solving.</p>
-
-        <h3>5. Goal Setting and Tracking</h3>
-        <p>Helps clarify intentions and track progress.</p>
-      </section>
-
-    </main>
+  <!-- Mobile Nav Overlay -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-close" id="mobileClose">✕</button>
+    <button onclick="showPage('home'); closeMobile()">Home</button>
+    <button onclick="showPage('guide'); closeMobile()">Guide</button>
+    <button onclick="showPage('templates'); closeMobile()">Templates</button>
+    <button onclick="showPage('blog'); closeMobile()">Blog</button>
+    <button onclick="showPage('guide'); showPanel('how'); closeMobile()">Start Writing</button>
   </div>
 
-  <footer>
-    <p class="Copyright">Copyright ©️ Journal by Hajira 2024</p>
-  </footer>
+  <!-- ══════════════ HOME PAGE ══════════════ -->
+  <div class="page active" id="page-home">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-rings">
+        <div class="ring"></div><div class="ring"></div>
+        <div class="ring"></div><div class="ring"></div>
+      </div>
+      <div class="hero-content">
+        <p class="hero-eyebrow">✦ &nbsp; A Guided Journey Inward &nbsp; ✦</p>
+        <h1 class="hero-title">Write Your<br><em>Inner World</em></h1>
+        <p class="hero-subtitle">"Journal writing is a voyage to the interior."<br>— Christina Baldwin</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="showPage('guide')">Explore the Guide</button>
+          <button class="btn btn-outline" onclick="showPage('templates')">Browse Templates</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-strip">
+      <p class="section-label">✦ Why Journal</p>
+      <h2 class="section-title">A Practice That Transforms</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🪞</span>
+          <h3>Self-Discovery</h3>
+          <p>Journaling is a mirror — it shows you patterns, fears, and desires you didn't know you had.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🌿</span>
+          <h3>Mental Clarity</h3>
+          <p>Empty the tabs open in your mind. Writing untangles thoughts that feel impossible to process.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🕯️</span>
+          <h3>Emotional Healing</h3>
+          <p>Putting words to feelings is one of the oldest and most powerful forms of emotional release.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📖</span>
+          <h3>A Living Archive</h3>
+          <p>Your journal becomes a time capsule — you'll love (and cringe at) the person you were.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quote -->
+    <section class="quote-block">
+      <blockquote>"The act of writing is the act of discovering what you believe."</blockquote>
+      <p class="quote-attr">— David Hare</p>
+    </section>
+
+    <!-- Explore -->
+    <section class="explore-section">
+      <p class="section-label">✦ Explore</p>
+      <h2 class="section-title">Where Would You Like to Begin?</h2>
+      <div class="explore-grid">
+        <div class="explore-tile" onclick="showPage('guide'); showPanel('introduction')">
+          <div class="tile-num">01</div>
+          <div class="tile-title">Introduction</div>
+          <div class="tile-desc">What journaling is and why it matters</div>
+        </div>
+        <div class="explore-tile" onclick="showPage('guide'); showPanel('types')">
+          <div class="tile-num">02</div>
+          <div class="tile-title">Types</div>
+          <div class="tile-desc">Gratitude, bullet, dream, travel &amp; more</div>
+        </div>
+        <div class="explore-tile" onclick="showPage('guide'); showPanel('how')">
+          <div class="tile-num">03</div>
+          <div class="tile-title">How to Start</div>
+          <div class="tile-desc">Prompts, habits, and a 7-day starter plan</div>
+        </div>
+        <div class="explore-tile" onclick="showPage('guide'); showPanel('benefits')">
+          <div class="tile-num">04</div>
+          <div class="tile-title">Benefits</div>
+          <div class="tile-desc">The science and soul of why this works</div>
+        </div>
+        <div class="explore-tile" onclick="showPage('templates')">
+          <div class="tile-num">05</div>
+          <div class="tile-title">Templates</div>
+          <div class="tile-desc">Ready-to-use structures for any mood</div>
+        </div>
+        <div class="explore-tile" onclick="showPage('blog')">
+          <div class="tile-num">06</div>
+          <div class="tile-title">Blog</div>
+          <div class="tile-desc">Essays on the journaling life</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <h3>The Journal</h3>
+            <p>A guide to writing your inner world.</p>
+          </div>
+          <div class="footer-links">
+            <button onclick="showPage('home')">Home</button>
+            <button onclick="showPage('guide')">Guide</button>
+            <button onclick="showPage('templates')">Templates</button>
+            <button onclick="showPage('blog')">Blog</button>
+          </div>
+        </div>
+        <div class="footer-bottom">© 2024 The Journal by Hajira &nbsp;·&nbsp; Written with intention.</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ══════════════ GUIDE PAGE ══════════════ -->
+  <div class="page" id="page-guide">
+    <div class="guide-page">
+      <div class="guide-header">
+        <h1>The Journaling Guide</h1>
+        <p>Everything you need to start — and keep going.</p>
+      </div>
+
+      <div class="guide-layout">
+        <!-- Sidebar -->
+        <aside class="guide-sidebar">
+          <div class="sidebar-inner">
+            <div class="sidebar-label">Contents</div>
+            <div class="sidebar-link active" onclick="showPanel('introduction')" data-panel="introduction">Introduction</div>
+            <div class="sidebar-link" onclick="showPanel('types')" data-panel="types">Types of Journaling</div>
+            <div class="sidebar-link" onclick="showPanel('digital')" data-panel="digital">Digital Journaling</div>
+            <div class="sidebar-link" onclick="showPanel('manual')" data-panel="manual">Manual Journaling</div>
+            <div class="sidebar-link" onclick="showPanel('visual')" data-panel="visual">Visual Journaling</div>
+            <div class="sidebar-link" onclick="showPanel('how')" data-panel="how">How to Start</div>
+            <div class="sidebar-link" onclick="showPanel('what')" data-panel="what">What to Write</div>
+            <div class="sidebar-link" onclick="showPanel('benefits')" data-panel="benefits">Benefits</div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="panel-wrap">
+
+          <!-- INTRO -->
+          <div class="guide-panel active" id="panel-introduction">
+            <span class="guide-tag">✦ Welcome</span>
+            <h1>Journaling: A Voyage to the Interior</h1>
+            <p>So, you've decided to embark on the adventure of journaling. Welcome to the club — and what a fine club it is.</p>
+            <p>Journaling is more than scribbling thoughts onto paper. It is a form of self-expression, a conversation with your innermost self, and a chance to become the author of your own life story. Whether you're a seasoned wordsmith or someone who hasn't written a page since school, the practice meets you exactly where you are.</p>
+
+            <div class="panel-quote">"The only journal that matters is the one you write."<br><small style="color:var(--muted);font-style:normal">— Joan Didion</small></div>
+
+            <h2>What exactly is journaling?</h2>
+            <p>Journaling is the practice of regularly recording thoughts, feelings, experiences, and observations — in a structured or unstructured format. It serves as a personal outlet for self-reflection, creativity, and emotional expression.</p>
+            <p>Think of it as having your own personal therapist, confidante, and time capsule — all wrapped in a single notebook.</p>
+
+            <h2>Words to carry with you</h2>
+            <ul>
+              <li>"Journaling is a way of tapping into your subconscious and accessing your intuition." — Julia Cameron</li>
+              <li>"Writing is a way of talking without being interrupted." — Jules Renard</li>
+              <li>"Fill your paper with the breathings of your heart." — William Wordsworth</li>
+            </ul>
+
+            <p style="margin-top:22px; color:var(--latte); font-style:italic;">Remember: there are no right or wrong ways to journal. This is the one place in life where you are completely free.</p>
+          </div>
+
+          <!-- TYPES -->
+          <div class="guide-panel" id="panel-types">
+            <span class="guide-tag">✦ Overview</span>
+            <h1>Types of Journaling</h1>
+            <p>Journaling is not one-size-fits-all. Each style serves a different purpose — try a few to discover what resonates with you.</p>
+
+            <div class="type-grid">
+              <div class="type-card">
+                <span class="tc-icon">🌒</span>
+                <h3>Reflective</h3>
+                <p>Processing daily experiences, emotions, and lessons learned. The most classic form.</p>
+              </div>
+              <div class="type-card">
+                <span class="tc-icon">🌻</span>
+                <h3>Gratitude</h3>
+                <p>Intentionally noting things you are grateful for — shifts your attention toward abundance.</p>
+              </div>
+              <div class="type-card">
+                <span class="tc-icon">🔵</span>
+                <h3>Bullet Journal</h3>
+                <p>A customisable hybrid of planner, diary, and to-do list. Great for organising minds.</p>
+              </div>
+              <div class="type-card">
+                <span class="tc-icon">🎨</span>
+                <h3>Creative</h3>
+                <p>Combining writing with drawings, doodles, and collages. No artistic skill required.</p>
+              </div>
+              <div class="type-card">
+                <span class="tc-icon">🌙</span>
+                <h3>Dream</h3>
+                <p>Recording dreams upon waking to explore patterns, symbols, and the subconscious.</p>
+              </div>
+              <div class="type-card">
+                <span class="tc-icon">✈️</span>
+                <h3>Travel</h3>
+                <p>Documenting experiences, places, flavours, and feelings while you explore the world.</p>
+              </div>
+            </div>
+
+            <div class="panel-quote">"I never travel without my diary. One should always have something sensational to read on the train."<br><small style="color:var(--muted);font-style:normal">— Oscar Wilde</small></div>
+          </div>
+
+          <!-- DIGITAL -->
+          <div class="guide-panel" id="panel-digital">
+            <span class="guide-tag">✦ Method</span>
+            <h1>Digital Journaling</h1>
+            <p>Digital journaling means keeping your journal in a digital format — on an app, a document, or a dedicated platform. It suits those who type faster than they write, or who value searchability and portability.</p>
+
+            <h2>Advantages</h2>
+            <ul>
+              <li><strong>Accessibility:</strong> Write from any device, anywhere in the world.</li>
+              <li><strong>Searchability:</strong> Find a memory from three years ago in seconds.</li>
+              <li><strong>Organisation:</strong> Tags, folders, and categories keep everything tidy.</li>
+              <li><strong>Multimedia:</strong> Attach photos, voice notes, or links alongside your words.</li>
+              <li><strong>Backup:</strong> Cloud storage means your journal can never burn or flood.</li>
+            </ul>
+
+            <h2>Recommended Tools</h2>
+            <ul>
+              <li><strong>Day One</strong> — A beautifully designed app built purely for journaling, with prompts and daily reminders.</li>
+              <li><strong>Notion</strong> — Highly customisable with templates. Perfect for those who love structure.</li>
+              <li><strong>Obsidian</strong> — Ideal for writers who want to link thoughts and build a personal knowledge base.</li>
+              <li><strong>Google Docs</strong> — Simple, free, and always accessible. Nothing fancy required.</li>
+              <li><strong>Evernote</strong> — Strong for capturing mixed media and organising across topics.</li>
+            </ul>
+
+            <div class="panel-quote">The best journaling app is the one you actually open.</div>
+          </div>
+
+          <!-- MANUAL -->
+          <div class="guide-panel" id="panel-manual">
+            <span class="guide-tag">✦ Method</span>
+            <h1>Manual — Written Journaling</h1>
+            <p>There is something irreplaceable about pen on paper. Written journaling slows the mind, deepens reflection, and makes the act of recording feel deliberate and sacred.</p>
+
+            <h2>Why write by hand?</h2>
+            <ul>
+              <li><strong>Intimacy:</strong> Your handwriting is uniquely yours — no font can replicate it.</li>
+              <li><strong>Mindfulness:</strong> The slower pace encourages deeper thought.</li>
+              <li><strong>Memory:</strong> Studies suggest writing by hand improves recall and comprehension.</li>
+              <li><strong>Freedom:</strong> Draw a margin note, doodle a feeling, cross things out boldly.</li>
+              <li><strong>No distractions:</strong> No notifications. No tabs. Just you and the page.</li>
+            </ul>
+
+            <h2>What to write in</h2>
+            <ul>
+              <li><strong>A plain notebook</strong> — The most accessible and freeing option.</li>
+              <li><strong>A Leuchtturm1917</strong> — Beloved by bullet journalers for its numbered pages.</li>
+              <li><strong>A Moleskine</strong> — Classic, portable, and satisfying in the hand.</li>
+              <li><strong>A gratitude journal</strong> — Often pre-structured with daily prompts.</li>
+              <li><strong>A sketchbook</strong> — If you want maximum visual freedom.</li>
+            </ul>
+
+            <div class="panel-quote">"A journal is a friend who keeps your secrets and never judges you."</div>
+          </div>
+
+          <!-- VISUAL -->
+          <div class="guide-panel" id="panel-visual">
+            <span class="guide-tag">✦ Method</span>
+            <h1>Visual Journaling</h1>
+            <p>Visual journaling combines words with drawings, photographs, collages, paint, and imagery. It is for those who feel that language alone cannot capture the fullness of an experience.</p>
+
+            <h2>Why go visual?</h2>
+            <ul>
+              <li><strong>Beyond words:</strong> Some emotions are better drawn than described.</li>
+              <li><strong>No pressure:</strong> There is no "correct" way to make art in a personal journal.</li>
+              <li><strong>Healing:</strong> Art therapy studies show visual expression can process trauma and grief.</li>
+              <li><strong>Creativity:</strong> Regular visual journaling loosens creative blocks in other areas of life.</li>
+              <li><strong>Reflection:</strong> Looking back through a visual journal is a richer experience than reading words.</li>
+            </ul>
+
+            <h2>Where to begin</h2>
+            <ul>
+              <li><strong>Art journals</strong> with thick pages that handle paint and glue</li>
+              <li><strong>Mixed media</strong> combining watercolour, magazine clippings, and handwriting</li>
+              <li><strong>Scrapbooking</strong> — tickets, receipts, packaging, anything that marks a moment</li>
+              <li><strong>Simple doodling</strong> in the margins of your existing notebook</li>
+            </ul>
+
+            <div class="panel-quote">"Creativity is not a talent. It is a way of operating." — John Cleese</div>
+          </div>
+
+          <!-- HOW -->
+          <div class="guide-panel" id="panel-how">
+            <span class="guide-tag">✦ Getting Started</span>
+            <h1>How Do I Actually <em>Begin?</em></h1>
+
+            <p>"Just start" is the most common advice — and the least useful one. Here is a gentler, more practical path.</p>
+
+            <div class="step-item">
+              <div class="step-num">01</div>
+              <div class="step-content">
+                <h3>Set your minimum</h3>
+                <p>Choose something so small it feels impossible to fail: <strong>2 minutes, 5 lines, or one paragraph</strong>. Consistency matters more than length. Even a voice note counts.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num">02</div>
+              <div class="step-content">
+                <h3>Attach it to a trigger</h3>
+                <p>Habits stick when linked to something you already do. Try: after fajr, after breakfast, after dinner, or right before bed. <em>"After I make my tea, I'll write for 2 minutes."</em></p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num">03</div>
+              <div class="step-content">
+                <h3>Use a simple template</h3>
+                <p>On blank-page days, use this: (1) What happened? (2) How did I feel? (3) Why might I feel that? (4) One gratitude. (5) One intention for tomorrow.</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-num">04</div>
+              <div class="step-content">
+                <h3>Try brain dumping</h3>
+                <p>Set a timer for 3–5 minutes. Write anything. No grammar, no structure — just empty the open tabs in your mind. Stop when the timer ends.</p>
+              </div>
+            </div>
+
+            <h2>Quick-start prompts</h2>
+            <ul>
+              <li>Right now, my mind is full of…</li>
+              <li>The best part of today was…</li>
+              <li>I'm avoiding ___ because…</li>
+              <li>Something I need to hear today is…</li>
+              <li>If I could redo one moment this week, it would be…</li>
+            </ul>
+
+            <h2>7-Day Starter Plan</h2>
+            <ol>
+              <li><strong>Day 1:</strong> Why do I want to journal?</li>
+              <li><strong>Day 2:</strong> What's weighing on me lately?</li>
+              <li><strong>Day 3:</strong> Three things I'm grateful for and why</li>
+              <li><strong>Day 4:</strong> What do I need more of in my life?</li>
+              <li><strong>Day 5:</strong> A moment I'm quietly proud of</li>
+              <li><strong>Day 6:</strong> What I'm learning about myself</li>
+              <li><strong>Day 7:</strong> A letter to my future self</li>
+            </ol>
+
+            <div class="panel-quote">If you miss a day, the rule is simple: never miss twice. Two lines tomorrow is enough.</div>
+          </div>
+
+          <!-- WHAT -->
+          <div class="guide-panel" id="panel-what">
+            <span class="guide-tag">✦ Content</span>
+            <h1>What Should I Write?</h1>
+            <p>There is no <em>should</em> when it comes to journaling. Write as disjointed or organised as your mind feels in this moment. Here are some directions when you need them:</p>
+
+            <ul>
+              <li><strong>Daily reflection</strong> — What happened, what you felt, what you noticed.</li>
+              <li><strong>Gratitude log</strong> — Name three things, and write one sentence about each.</li>
+              <li><strong>Goal mapping</strong> — Where do you want to be in 3 months? What's blocking you?</li>
+              <li><strong>Conversations you didn't have</strong> — Write the thing you couldn't say out loud.</li>
+              <li><strong>Letters to yourself</strong> — Past you, future you, or present you on a hard day.</li>
+              <li><strong>Things that made you smile</strong> — Small joys are worth recording too.</li>
+              <li><strong>Questions you're sitting with</strong> — You don't need to answer them. Just write them.</li>
+            </ul>
+
+            <div class="panel-quote">"The more grateful I am, the more beauty I see." — Mary Davis</div>
+
+            <h2>When you don't know where to start</h2>
+            <p>Open to a blank page and write: <em>"I don't know what to write today, but…"</em> and see what follows. Something always does.</p>
+          </div>
+
+          <!-- BENEFITS -->
+          <div class="guide-panel" id="panel-benefits">
+            <span class="guide-tag">✦ The Why</span>
+            <h1>Benefits of Journaling</h1>
+            <p>The case for journaling is backed by both psychological research and centuries of human testimony. Here is what the practice can genuinely offer.</p>
+
+            <ul class="benefit-list">
+              <li>
+                <span class="b-icon">🪞</span>
+                <div><strong>Self-Awareness</strong>Writing reveals patterns in your thinking and behaviour you'd otherwise miss. Over time, you come to know yourself with remarkable depth.</div>
+              </li>
+              <li>
+                <span class="b-icon">🌿</span>
+                <div><strong>Stress Reduction</strong>Externalising worries onto the page reduces their mental weight. The act of naming a feeling begins to defuse it.</div>
+              </li>
+              <li>
+                <span class="b-icon">💛</span>
+                <div><strong>Improved Mental Health</strong>Research in expressive writing (Dr James Pennebaker) shows measurable reduction in anxiety and depressive symptoms through regular writing.</div>
+              </li>
+              <li>
+                <span class="b-icon">✨</span>
+                <div><strong>Creative Expansion</strong>Journaling loosens the inner critic and opens a channel to creative thinking. Many writers, artists, and thinkers credit their journals as their real work.</div>
+              </li>
+              <li>
+                <span class="b-icon">🎯</span>
+                <div><strong>Clarity on Goals</strong>Writing down what you want — and regularly revisiting it — dramatically increases the chance of achieving it.</div>
+              </li>
+              <li>
+                <span class="b-icon">📖</span>
+                <div><strong>A Living Archive</strong>Your journal becomes a record of who you are: the fears, the joys, the ordinary Tuesdays. Future you will thank present you for every page.</div>
+              </li>
+            </ul>
+          </div>
+
+        </main>
+      </div>
+
+      <footer>
+        <div class="footer-inner">
+          <div class="footer-top">
+            <div class="footer-brand">
+              <h3>The Journal</h3>
+              <p>A guide to writing your inner world.</p>
+            </div>
+            <div class="footer-links">
+              <button onclick="showPage('home')">Home</button>
+              <button onclick="showPage('guide')">Guide</button>
+              <button onclick="showPage('templates')">Templates</button>
+              <button onclick="showPage('blog')">Blog</button>
+            </div>
+          </div>
+          <div class="footer-bottom">© 2024 The Journal by Hajira &nbsp;·&nbsp; Written with intention.</div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ══════════════ TEMPLATES PAGE ══════════════ -->
+  <div class="page" id="page-templates">
+    <div class="templates-page">
+      <div class="templates-header">
+        <p class="section-label">✦ Ready-to-Use</p>
+        <h1>Journaling Templates</h1>
+        <p>Pick a structure that fits your mood and make it yours.</p>
+      </div>
+
+      <div class="templates-body">
+
+        <h2 class="template-section-title">Daily Templates</h2>
+        <div class="template-grid">
+
+          <div class="template-card">
+            <div class="template-header-bar tc-amber"></div>
+            <div class="template-card-body">
+              <h3>The Daily Check-In</h3>
+              <p>A gentle five-minute ritual for every morning or evening. Simple, grounding, consistent.</p>
+              <div class="template-preview">
+                <strong>Today's Date ___</strong>
+                How am I feeling right now? (one word or more)...<br>
+                What happened today?...<br>
+                One thing I'm grateful for...<br>
+                One intention for tomorrow...
+              </div>
+              <div class="tag-row">
+                <span class="tag">5 min</span>
+                <span class="tag">Daily</span>
+                <span class="tag">Beginner</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="template-card">
+            <div class="template-header-bar tc-roast"></div>
+            <div class="template-card-body">
+              <h3>Morning Pages</h3>
+              <p>Julia Cameron's classic — three pages of unfiltered stream-of-consciousness writing, first thing.</p>
+              <div class="template-preview">
+                <strong>No template. Just write.</strong>
+                Open the notebook. Write anything.<br>
+                "I'm sleepy, I want chai, I don't know what—"<br>
+                Keep going until three pages are done.
+              </div>
+              <div class="tag-row">
+                <span class="tag">20–30 min</span>
+                <span class="tag">Morning</span>
+                <span class="tag">Stream</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="template-card">
+            <div class="template-header-bar tc-muted"></div>
+            <div class="template-card-body">
+              <h3>Brain Dump</h3>
+              <p>Set a timer. Empty your mind completely. No grammar, no structure. Just out.</p>
+              <div class="template-preview">
+                <strong>Set timer: 5 minutes</strong>
+                Write everything that's taking up space...<br>
+                Worries, lists, random thoughts, feelings...<br>
+                Stop when the timer rings. Done.
+              </div>
+              <div class="tag-row">
+                <span class="tag">5 min</span>
+                <span class="tag">Anytime</span>
+                <span class="tag">Anxiety</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <h2 class="template-section-title">Reflective Templates</h2>
+        <div class="template-grid">
+
+          <div class="template-card">
+            <div class="template-header-bar tc-amber"></div>
+            <div class="template-card-body">
+              <h3>Weekly Review</h3>
+              <p>A Sunday ritual to close the week with awareness and open the next with intention.</p>
+              <div class="template-preview">
+                <strong>Week of ___</strong>
+                What went well this week?...<br>
+                What was difficult?...<br>
+                What did I learn about myself?...<br>
+                Three priorities for next week...
+              </div>
+              <div class="tag-row">
+                <span class="tag">15 min</span>
+                <span class="tag">Weekly</span>
+                <span class="tag">Growth</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="template-card">
+            <div class="template-header-bar tc-roast"></div>
+            <div class="template-card-body">
+              <h3>Gratitude Deep Dive</h3>
+              <p>Go beyond the list. Write three things and actually explain <em>why</em> you're grateful.</p>
+              <div class="template-preview">
+                <strong>Today I'm grateful for...</strong>
+                1. ___ because ___...<br>
+                2. ___ because ___...<br>
+                3. ___ because ___...<br>
+                How do these make me feel?
+              </div>
+              <div class="tag-row">
+                <span class="tag">10 min</span>
+                <span class="tag">Gratitude</span>
+                <span class="tag">Positivity</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="template-card">
+            <div class="template-header-bar tc-muted"></div>
+            <div class="template-card-body">
+              <h3>Letter to Future Self</h3>
+              <p>Write a letter to yourself six months or a year from now. Seal it. Reread it later.</p>
+              <div class="template-preview">
+                <strong>Dear Future Me,</strong>
+                Right now I am feeling...<br>
+                I hope by the time you read this...<br>
+                What I most want you to remember is...<br>
+                With love, Past You.
+              </div>
+              <div class="tag-row">
+                <span class="tag">20 min</span>
+                <span class="tag">Reflection</span>
+                <span class="tag">Perspective</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <h2 class="template-section-title">Emotional &amp; Healing Templates</h2>
+        <div class="template-grid">
+
+          <div class="template-card">
+            <div class="template-header-bar tc-amber"></div>
+            <div class="template-card-body">
+              <h3>Processing a Hard Day</h3>
+              <p>For when something happened and you need to untangle it before sleep.</p>
+              <div class="template-preview">
+                <strong>What happened?</strong>
+                What did I feel in my body?...<br>
+                What story am I telling myself about it?...<br>
+                Is that story definitely true?...<br>
+                What do I need right now?
+              </div>
+              <div class="tag-row">
+                <span class="tag">10 min</span>
+                <span class="tag">Healing</span>
+                <span class="tag">Emotions</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="template-card">
+            <div class="template-header-bar tc-roast"></div>
+            <div class="template-card-body">
+              <h3>The Unsent Letter</h3>
+              <p>Write the thing you couldn't say — to anyone, about anything. You never have to send it.</p>
+              <div class="template-preview">
+                <strong>Dear ___,</strong>
+                What I've been wanting to say is...<br>
+                What I feel when I think of you is...<br>
+                What I wish you knew is...<br>
+                What I'm letting go of is...
+              </div>
+              <div class="tag-row">
+                <span class="tag">Open-ended</span>
+                <span class="tag">Release</span>
+                <span class="tag">Healing</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <footer>
+        <div class="footer-inner">
+          <div class="footer-top">
+            <div class="footer-brand">
+              <h3>The Journal</h3>
+              <p>A guide to writing your inner world.</p>
+            </div>
+            <div class="footer-links">
+              <button onclick="showPage('home')">Home</button>
+              <button onclick="showPage('guide')">Guide</button>
+              <button onclick="showPage('templates')">Templates</button>
+              <button onclick="showPage('blog')">Blog</button>
+            </div>
+          </div>
+          <div class="footer-bottom">© 2024 The Journal by Hajira &nbsp;·&nbsp; Written with intention.</div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ══════════════ BLOG PAGE ══════════════ -->
+  <div class="page" id="page-blog">
+    <div class="blog-page">
+      <div class="blog-header">
+        <p class="section-label">✦ Essays &amp; Reflections</p>
+        <h1>The Journal Blog</h1>
+        <p>Honest writing about the practice of writing.</p>
+      </div>
+
+      <div class="blog-body">
+
+        <div class="featured-post">
+          <p class="fp-label">✦ Latest Essay</p>
+          <h2>Why You Keep Stopping — And How to Actually Build the Habit</h2>
+          <p>Most people don't fail at journaling because they lack discipline. They fail because their starting point is too ambitious, their expectations too high, and their approach too rigid. Here is what actually works — backed by habit science and personal failure.</p>
+          <p class="post-meta">By Hajira &nbsp;·&nbsp; <span>April 2024</span> &nbsp;·&nbsp; 8 min read</p>
+        </div>
+
+        <div class="blog-grid">
+
+          <div class="blog-card">
+            <div class="blog-card-band"></div>
+            <div class="blog-card-body">
+              <p class="blog-cat">✦ Practice</p>
+              <h3>Morning Pages Changed My Relationship with My Own Mind</h3>
+              <p>Three pages. Every morning. No filter. I didn't believe it would work until it did — and then I couldn't stop.</p>
+              <div class="blog-card-footer">
+                <span>March 2024 · 6 min</span>
+                <span class="read-more">Read →</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="blog-card">
+            <div class="blog-card-band"></div>
+            <div class="blog-card-body">
+              <p class="blog-cat">✦ Tools</p>
+              <h3>Notion vs Paper: Which Is Better for Journaling?</h3>
+              <p>Both have devoted followers and genuine merits. After years of switching between them, here is an honest comparison.</p>
+              <div class="blog-card-footer">
+                <span>February 2024 · 7 min</span>
+                <span class="read-more">Read →</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="blog-card">
+            <div class="blog-card-band"></div>
+            <div class="blog-card-body">
+              <p class="blog-cat">✦ Wellness</p>
+              <h3>The Science Behind Why Writing Reduces Anxiety</h3>
+              <p>Dr James Pennebaker's research into expressive writing changed how psychologists think about emotional processing. Here's what it means for you.</p>
+              <div class="blog-card-footer">
+                <span>January 2024 · 9 min</span>
+                <span class="read-more">Read →</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="blog-card">
+            <div class="blog-card-band"></div>
+            <div class="blog-card-body">
+              <p class="blog-cat">✦ Creative</p>
+              <h3>On Keeping a Visual Journal When You "Can't Draw"</h3>
+              <p>A visual journal is not about beautiful art. It is about honest expression — and anyone can do it.</p>
+              <div class="blog-card-footer">
+                <span>December 2023 · 5 min</span>
+                <span class="read-more">Read →</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="blog-card">
+            <div class="blog-card-band"></div>
+            <div class="blog-card-body">
+              <p class="blog-cat">✦ Reflection</p>
+              <h3>Reading My Old Journals: Joy, Cringe, and Deep Compassion</h3>
+              <p>Going back through years of writing is a strange and moving experience. Here is what I found — and what I wish I'd known.</p>
+              <div class="blog-card-footer">
+                <span>November 2023 · 10 min</span>
+                <span class="read-more">Read →</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="blog-card">
+            <div class="blog-card-band"></div>
+            <div class="blog-card-body">
+              <p class="blog-cat">✦ Getting Started</p>
+              <h3>The Only Journaling Prompt You Will Ever Need</h3>
+              <p>It is four words. It works every single time. And it will surprise you with where it leads.</p>
+              <div class="blog-card-footer">
+                <span>October 2023 · 4 min</span>
+                <span class="read-more">Read →</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Newsletter -->
+        <div class="newsletter-strip" style="border-radius:20px; margin-top:60px;">
+          <p class="section-label" style="margin-bottom:12px;">✦ Stay Close</p>
+          <h2>A Letter, When It Feels Right</h2>
+          <p>No schedule. No spam. Just occasional words worth reading.</p>
+          <div class="nl-form">
+            <input class="nl-input" type="email" placeholder="your@email.com">
+            <button class="btn btn-primary">Subscribe</button>
+          </div>
+        </div>
+
+      </div>
+
+      <footer>
+        <div class="footer-inner">
+          <div class="footer-top">
+            <div class="footer-brand">
+              <h3>The Journal</h3>
+              <p>A guide to writing your inner world.</p>
+            </div>
+            <div class="footer-links">
+              <button onclick="showPage('home')">Home</button>
+              <button onclick="showPage('guide')">Guide</button>
+              <button onclick="showPage('templates')">Templates</button>
+              <button onclick="showPage('blog')">Blog</button>
+            </div>
+          </div>
+          <div class="footer-bottom">© 2024 The Journal by Hajira &nbsp;·&nbsp; Written with intention.</div>
+        </div>
+      </footer>
+    </div>
+  </div>
 
   <script>
-    // --- Mobile top menu toggle ---
-    const menuBtn = document.getElementById("menuBtn");
-    const topNav = document.getElementById("topNav");
-
-    menuBtn.addEventListener("click", () => {
-      const isOpen = topNav.classList.toggle("open");
-      menuBtn.setAttribute("aria-expanded", String(isOpen));
-    });
-
-    // --- Single-page section switching (no :target needed) ---
-    const links = document.querySelectorAll("[data-section]");
-    const panels = document.querySelectorAll("[data-panel]");
-    const sideLinks = document.querySelectorAll("#sideMenu .link");
-
-    function showSection(id, pushHash = true) {
-      // Panels
-      panels.forEach(p => p.classList.toggle("active", p.dataset.panel === id));
-
-      // Sidebar active state
-      sideLinks.forEach(a => a.classList.toggle("active", a.dataset.section === id));
-
-      // Update URL hash (optional)
-      if (pushHash) history.replaceState(null, "", "#" + id);
-
-      // On mobile, close top nav after selecting
-      if (topNav.classList.contains("open")) {
-        topNav.classList.remove("open");
-        menuBtn.setAttribute("aria-expanded", "false");
-      }
-
-      // Scroll to top of content area on small screens
-      if (window.matchMedia("(max-width: 900px)").matches) {
-        document.getElementById("content").scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+    // ─── Page switching ───
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      updateNavActive(id);
     }
 
-    // Click handlers
-    links.forEach(el => {
-      el.addEventListener("click", (e) => {
-        const id = el.dataset.section;
-        if (!id) return;
-
-        // Prevent default only for internal navigation
-        // (so external links still open normally)
-        if (el.tagName.toLowerCase() === "a" && el.getAttribute("href")?.startsWith("http")) return;
-
-        e.preventDefault();
-        showSection(id);
+    function updateNavActive(id) {
+      document.querySelectorAll('.nav-links button[data-page]').forEach(b => {
+        b.classList.toggle('active', b.dataset.page === id);
       });
-    });
+    }
 
-    const initial = (location.hash || "#introduction").replace("#", "");
-    showSection(initial, false);
+    // ─── Guide panel switching ───
+    function showPanel(id) {
+      document.querySelectorAll('.guide-panel').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('panel-' + id);
+      if (target) target.classList.add('active');
 
-    window.addEventListener("hashchange", () => {
-      const id = (location.hash || "#introduction").replace("#", "");
-      showSection(id, false);
-    });
+      document.querySelectorAll('.sidebar-link').forEach(l => {
+        l.classList.toggle('active', l.dataset.panel === id);
+      });
+    }
+
+    // ─── Mobile nav ───
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileClose = document.getElementById('mobileClose');
+
+    hamburger.addEventListener('click', () => mobileNav.classList.add('open'));
+    mobileClose.addEventListener('click', closeMobile);
+
+    function closeMobile() { mobileNav.classList.remove('open'); }
   </script>
 </body>
 </html>
